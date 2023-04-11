@@ -399,9 +399,13 @@ class TSPSolver:
 	def fancy( self,time_allowance=60.0 ):
 		initialCostMatrix = self.initializeWorkingArray(self._scenario)
 
-		minimumSpanningTree = self.primMST(initialCostMatrix)
+		inputMSTPointerList, costKeys = self.primMST(initialCostMatrix)
 
-	
+		minimumSpanningTree = self.outputMSTToMatrix(inputMSTPointerList, costKeys, initialCostMatrix)
+
+		return 
+
+
 	def primMST( self, inputCostMatrix):
 		workingCostMatrix = deepcopy(inputCostMatrix)
 
@@ -427,7 +431,7 @@ class TSPSolver:
 					nodeParents[v] = targetNode
 					keys[v] = workingCostMatrix[v][targetNode]
 
-		return 
+		return nodeParents, keys
 
 
 	def findMinInList( self, keyList, inputAlreadyVisitedList):
@@ -439,3 +443,15 @@ class TSPSolver:
 		
 		return minData
 
+
+	def outputMSTToMatrix( self, inputMSTPointerList, costKeys, actualCostMatrix):
+		workingMatrix = [[float('inf') for i in range(len(inputMSTPointerList))] for j in range(len(inputMSTPointerList))]
+
+		for targetToIndex in range(len(inputMSTPointerList)):
+			if (inputMSTPointerList[targetToIndex] != -1):
+				# This will add in both directions between nodes
+				targetFromIndex = inputMSTPointerList[targetToIndex]
+				workingMatrix[targetFromIndex][targetToIndex] = actualCostMatrix[targetFromIndex][targetToIndex]
+				workingMatrix[targetToIndex][targetFromIndex] = actualCostMatrix[targetToIndex][targetFromIndex]
+
+		return workingMatrix
